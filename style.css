@@ -164,6 +164,9 @@ body{
     justify-content: center;
     gap: 16px;
 }
+.songbuttons img{
+    cursor: pointer;
+}
 .songlist{
     height: 544px;
     overflow: auto;
@@ -217,4 +220,8 @@ body{
     bottom: 6px;
     left: 0%;
     transition: left 0.5s;
+}
+.abovebar{
+    display: flex;
+    justify-content: space-between; 
 }

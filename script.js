@@ -1,5 +1,7 @@
 console.log("Writing javascript");
 
+let currentsong=new Audio();
+
 async function getsongs() {
   let a = await fetch("http://127.0.0.1:5500/songs/");
   let response = await a.text();
@@ -46,8 +48,12 @@ function cleanSongName(song) {
 }
 
 const playmusic=(track)=>{
-  let audio=new Audio("songs/"+track)
-  audio.play()
+  // let audio=new Audio("songs/"+track)
+  currentsong.src="songs/"+track
+  currentsong.play()
+  play.src="pause.svg"
+  document.querySelector(".songinfo").innerHTML=cleanSongName(track)
+  document.querySelector(".songtime").innerHTML="00:00/00:00"
 }
 
 async function main() {
@@ -57,25 +63,38 @@ async function main() {
 
   songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
   for (const song of songs) {
-    songUL.innerHTML = songUL.innerHTML +
+    songUL.innerHTML += `
+<li data-song="${song}">
+  <img class="invert" src="music.svg" alt="">
+  <div class="info">
+    <div>${cleanSongName(song)}</div>
+    <div>Artist Name</div>
+  </div>
+  <div class="playnow">
+    <span>Play Now</span>
+    <img class="invert" src="play.svg" alt="">
+  </div>
+</li>`;
 
-      `<li><img class="invert" src="music.svg" alt="">
-        <div class="info">
-          <div> ${cleanSongName(song)}</div>
-          <div>Artist Name</div>
-        </div>
-        <div class="playnow">
-          <span>Play Now</span>
-          <img class="invert" src="play.svg" alt="">
-        </div>
-      </li>`
+
   }
 
-   Array.from(document.querySelector(".songlist").getElementsByTagName("li")).forEach(e => {
-  e.addEventListener("click", element => {
-    playmusic(e.querySelector(".info").firstElementChild.innerHTML.trim());
+  Array.from(document.querySelector(".songlist").getElementsByTagName("li"))
+  .forEach(e => {
+    e.addEventListener("click", () => {
+      playmusic(e.dataset.song);
+    });
   });
-});
+
+  play.addEventListener("click",()=>{
+    if(currentsong.paused){
+      currentsong.play()
+      play.src="pause.svg"
+    }else{
+      currentsong.pause()
+      play.src="play.svg"
+    }
+  })
 
 }
   main();
