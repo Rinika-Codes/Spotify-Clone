@@ -203,13 +203,14 @@ body{
     padding: 8px 20px;
 }
 .seekbar{
-    height: 2px;
+    height: 4px;
     width: 98%;
     background: black;
     position: absolute;
     bottom: 0;
     border-radius: 10px;
     margin: 6px;
+    cursor: pointer;
 }
 .circle{
     width: 13px;
@@ -224,4 +225,8 @@ body{
 .abovebar{
     display: flex;
     justify-content: space-between; 
+}
+.songinfo , .songtime{
+    color: black;
+    padding: 0 12px;
 }

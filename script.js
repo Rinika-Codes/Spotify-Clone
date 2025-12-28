@@ -2,6 +2,22 @@ console.log("Writing javascript");
 
 let currentsong=new Audio();
 
+function secondsToMinutes(seconds) {
+  if (isNaN(seconds)) return "00:00";
+
+  seconds = Math.floor(seconds); // 👈 FIX HERE
+
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+
+  return (
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(remainingSeconds).padStart(2, "0")
+  );
+}
+
+
 async function getsongs() {
   let a = await fetch("http://127.0.0.1:5500/songs/");
   let response = await a.text();
@@ -47,11 +63,13 @@ function cleanSongName(song) {
   return song;
 }
 
-const playmusic=(track)=>{
+const playmusic=(track,pause=false)=>{
   // let audio=new Audio("songs/"+track)
   currentsong.src="songs/"+track
+  if(!pause){
   currentsong.play()
   play.src="pause.svg"
+  }
   document.querySelector(".songinfo").innerHTML=cleanSongName(track)
   document.querySelector(".songtime").innerHTML="00:00/00:00"
 }
@@ -59,6 +77,7 @@ const playmusic=(track)=>{
 async function main() {
   //get list of all songs
   let songs = await getsongs();
+  playmusic(songs[0],true);
   console.log(songs);
 
   songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
@@ -94,6 +113,17 @@ async function main() {
       currentsong.pause()
       play.src="play.svg"
     }
+  })
+  // listen for timeupdate event
+  currentsong.addEventListener("timeupdate",()=>{
+    document.querySelector(".songtime").innerHTML=`${secondsToMinutes(currentsong.currentTime)}/${secondsToMinutes(currentsong.duration)}`
+    document.querySelector(".circle").style.left=(currentsong.currentTime/currentsong.duration)*100+"%";
+  })
+  //adding eventlistener to seekbar
+  document.querySelector(".seekbar").addEventListener("click",e=>{
+    let percent=(e.offsetX/e.target.getBoundingClientRect().width)*100
+    document.querySelector(".circle").style.left=percent+"%";
+    currentsong.currentTime=(currentsong.duration*percent)/100;
   })
 
 }
