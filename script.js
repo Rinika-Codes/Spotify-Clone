@@ -61,6 +61,8 @@ async function getsongs(folder) {
       playmusic(e.dataset.song);
     });
   });
+
+  return songs
 }
 
 function cleanSongName(song) {
@@ -93,6 +95,7 @@ function cleanSongName(song) {
 const playmusic=(track,pause=false)=>{
   // let audio=new Audio("songs/"+track)
   currentsong.src=`/${currFolder}/`+track
+  // currentsong.load()
   if(!pause){
   currentsong.play()
   play.src="pause.svg"
@@ -122,12 +125,28 @@ async function displayAlbums() {
       let info = await infoRes.json();
 
       cardcontainer.innerHTML += `
-        <div class="card" data-folder="${folder}">
-          <img src="/songs/${folder}/cover.jpg" alt="">
-          <h2>${info.title}</h2>
-          <p>${info.description}</p>
-        </div>
-      `;
+  <div class="card" data-folder="${folder}">
+    <div class="play">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+           width="40" height="40" fill="black">
+        <path d="M18.89 12.846c-.353 1.343-2.023 2.292-5.364 4.19
+                 -3.23 1.835-4.845 2.753-6.146 2.384
+                 -.538-.153-1.028-.442-1.423-.841
+                 -.956-.965-.956-2.836-.956-6.579
+                 0-3.743 0-5.614.956-6.579
+                 .395-.399.885-.688 1.423-.841
+                 1.301-.369 2.916.549 6.146 2.384
+                 3.341 1.898 5.011 2.847 5.364 4.19
+                 .146.554.146 1.137 0 1.691z"/>
+      </svg>
+    </div>
+
+    <img src="/songs/${folder}/cover.jpg" alt="">
+    <h2>${info.title}</h2>
+    <p>${info.description}</p>
+  </div>
+`;
+
     } catch (err) {
       console.error("Failed to load album:", folder);
     }
@@ -137,6 +156,7 @@ async function displayAlbums() {
   Array.from(document.getElementsByClassName("card")).forEach(e=>{
     e.addEventListener("click",async items=>{
       songs = await getsongs(`songs/${items.currentTarget.dataset.folder}`);
+      playmusic(songs[0]);
     })
   })
 }
@@ -231,7 +251,19 @@ async function main() {
   document.querySelector(".range").getElementsByTagName("input")[0].addEventListener("change",(e)=>{
     currentsong.volume=parseInt(e.target.value)/100
   })
-
+  
+  //add event to vol
+  document.querySelector(".volume>img").addEventListener("click",e=>{
+    if(e.target.src.includes("volume.svg")){
+      e.target.src=e.target.src.replace("volume.svg","mute.svg")
+      currentsong.volume=0;
+      document.querySelector(".range").getElementsByTagName("input")[0].value=0
+    }else{
+      e.target.src=e.target.src.replace("mute.svg","volume.svg")
+      currentsong.volume=.10;
+      document.querySelector(".range").getElementsByTagName("input")[0].value=10
+    }
+  })
 
 }
   main();
